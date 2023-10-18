@@ -1,0 +1,14 @@
+Analysis & Synthesis Status : Successful - Wed Oct 11 10:31:26 2023
+Quartus II Version : 8.1 Build 163 10/28/2008 SJ Full Version
+Revision Name : LED_blinker
+Top-level Entity Name : LED_blinker
+Family : Cyclone II
+Total logic elements : 40
+    Total combinational functions : 40
+    Dedicated logic registers : 25
+Total registers : 25
+Total pins : 7
+Total virtual pins : 0
+Total memory bits : 0
+Embedded Multiplier 9-bit elements : 0
+Total PLLs : 0

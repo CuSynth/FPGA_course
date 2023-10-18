@@ -1,0 +1,15 @@
+Analysis & Synthesis Status : Successful - Wed Sep 27 09:53:37 2023
+Quartus II Version : 8.1 Build 163 10/28/2008 SJ Full Version
+Revision Name : BinCntr
+Top-level Entity Name : BinCntr
+Family : Stratix II
+Logic utilization : N/A
+    Combinational ALUTs : 8
+    Dedicated logic registers : 8
+Total registers : 8
+Total pins : 0
+Total virtual pins : 9
+Total block memory bits : 0
+DSP block 9-bit elements : 0
+Total PLLs : 0
+Total DLLs : 0

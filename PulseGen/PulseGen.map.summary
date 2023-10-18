@@ -1,0 +1,15 @@
+Analysis & Synthesis Status : Successful - Wed Oct 11 09:02:15 2023
+Quartus II Version : 8.1 Build 163 10/28/2008 SJ Full Version
+Revision Name : PulseGen
+Top-level Entity Name : PulseGen
+Family : Stratix II
+Logic utilization : N/A
+    Combinational ALUTs : 12
+    Dedicated logic registers : 13
+Total registers : 13
+Total pins : 3
+Total virtual pins : 0
+Total block memory bits : 0
+DSP block 9-bit elements : 0
+Total PLLs : 0
+Total DLLs : 0
