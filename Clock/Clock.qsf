@@ -50,3 +50,5 @@ set_location_assignment PIN_J1 -to segm_0[1]
 set_location_assignment PIN_J2 -to segm_0[0]
 set_global_assignment -name MISC_FILE "D:/NSU/FPGA/Clock/Clock.dpf"
 set_location_assignment PIN_L1 -to clk
+set_global_assignment -name VHDL_FILE FourDigitDisplay.vhd
+set_global_assignment -name VHDL_FILE ClockCore.vhd
