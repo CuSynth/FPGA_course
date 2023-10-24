@@ -74,3 +74,4 @@ set_location_assignment PIN_J4 -to segm_3[3]
 set_location_assignment PIN_L8 -to segm_3[4]
 set_location_assignment PIN_F3 -to segm_3[5]
 set_location_assignment PIN_D4 -to segm_3[6]
+set_location_assignment PIN_Y21 -to buzz
