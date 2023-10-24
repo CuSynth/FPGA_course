@@ -1,7 +1,0 @@
-|Test
-clk => RS.CLK
-s => RS~0.OUTPUTSELECT
-r => RS~1.OUTPUTSELECT
-q <= RS.DB_MAX_OUTPUT_PORT_TYPE
-
-
