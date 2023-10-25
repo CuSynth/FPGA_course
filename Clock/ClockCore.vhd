@@ -78,9 +78,9 @@ begin
 		end if; -- rising_edge(ClockCore_clk)
 	end process;
 	
-	ClockCore_time_o(3 downto 0) 	<= std_logic_vector(to_unsigned(h1, 4));
-	ClockCore_time_o(7 downto 4) 	<= std_logic_vector(to_unsigned(m10, 4));
-	ClockCore_time_o(11 downto 8) 	<= std_logic_vector(to_unsigned(h1, 4));
-	ClockCore_time_o(15 downto 12)	<= std_logic_vector(to_unsigned(h10, 4));
+	ClockCore_time_out(3 downto 0) 	<= std_logic_vector(to_unsigned(m1, 4));
+	ClockCore_time_out(7 downto 4) 	<= std_logic_vector(to_unsigned(m10, 4));
+	ClockCore_time_out(11 downto 8) 	<= std_logic_vector(to_unsigned(h1, 4));
+	ClockCore_time_out(15 downto 12)	<= std_logic_vector(to_unsigned(h10, 4));
 
 end Behavioral;

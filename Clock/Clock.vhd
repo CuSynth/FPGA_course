@@ -37,8 +37,10 @@ architecture rtl of Clock is
 	
 	component ClockCore is
 		port (
-			ClockCore_clk			:	in  std_logic;
-			ClockCore_time_o		:	out std_logic_vector(15 downto 0)
+		ClockCore_clk			:	in  std_logic;
+		ClockCore_up			:	in  std_logic;
+		ClockCore_down			:	in  std_logic;
+		ClockCore_time_out		:	out std_logic_vector(15 downto 0)
 		);
 	end component; -- ClockCore
 	
@@ -54,8 +56,10 @@ begin
 									 clk_sec_o => sec_clk_sig,
 									 clk_min_o => min_clk_sig);
 										 
-	ClockCore_map : ClockCore port map (ClockCore_clk    => min_clk_sig,
-										ClockCore_time_o => cur_time);
+	ClockCore_map : ClockCore port map (ClockCore_clk      => sec_clk_sig,
+										ClockCore_up	   => '1',
+										ClockCore_down	   => '0',
+										ClockCore_time_out => cur_time);
 	
 	FourDigitDisplay_map : FourDigitDisplay port map (FourDigitDisplay_bcd => cur_time,
 													  FourDigitDisplay_segm(6 downto 0)   => segm_0,

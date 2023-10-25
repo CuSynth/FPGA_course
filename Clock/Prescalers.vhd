@@ -17,7 +17,7 @@ end Prescalers;
 
 architecture Behavioral of Prescalers is
 
-	constant CLOCK_PRESCALER 	: natural := (50000000);
+	constant CLOCK_PRESCALER 	: natural := (5000000);
 --	signal 	 sec_pr_reg			: std_logic_vector(f_log2(CLOCK_PRESCALER)-1 downto 0);
 	signal 	 sec_pr_reg			: integer range 0 to CLOCK_PRESCALER := 0;
 	signal   min_pr_reg			: integer range 0 to 60 := 0;
@@ -50,4 +50,6 @@ begin
 		end if; -- rising_edge(ClockCore_clk)
 	end process;
 	
+	clk_sec_o <= sec_clk;
+	clk_min_o <= min_clk;
 end Behavioral;

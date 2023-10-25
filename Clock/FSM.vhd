@@ -26,7 +26,7 @@ end FSM;
 
 
 
-architecture Behavioral of ClockCore is
+architecture Behavioral of FSM is
 
 	type State_t is (Tim, Tim_s, Alarm_s);
 	signal State : State_t := Tim;
