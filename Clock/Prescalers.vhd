@@ -8,48 +8,55 @@ use work.Math_PACK.all;
 
 entity Prescalers is
 	port(
-		clk_i		:	in std_logic;
-		clk_sec_o	:	out std_logic;	
-		clk_min_o	:	out std_logic
+		clk_i	 :	in std_logic;
+		out_1Hz	 :	out std_logic;	
+		out_2Hz	 :	out std_logic;	
+		out_20Hz :	out std_logic
 	);
 end Prescalers;
 
 
 architecture Behavioral of Prescalers is
+	constant CPU_CLOCK		: natural := 50000000;
 
-	constant CLOCK_PRESCALER 	: natural := (5000000);
---	signal 	 sec_pr_reg			: std_logic_vector(f_log2(CLOCK_PRESCALER)-1 downto 0);
-	signal 	 sec_pr_reg			: integer range 0 to CLOCK_PRESCALER := 0;
-	signal   min_pr_reg			: integer range 0 to 60 := 0;
+	constant PRESCALER_1HZ  : natural := (CPU_CLOCK/1);
+	signal 	 presc_reg_1Hz  : integer range 0 to PRESCALER_1HZ := 0;
 
-	signal	 sec_clk			: std_logic := '0';
-	signal	 min_clk			: std_logic := '0';
+	constant PRESCALER_2HZ  : natural := (CPU_CLOCK/2);
+	signal 	 presc_reg_2Hz  : integer range 0 to PRESCALER_2HZ := 0;
 
+	constant PRESCALER_20HZ : natural := (CPU_CLOCK/20);
+	signal 	 presc_reg_20Hz : integer range 0 to PRESCALER_20HZ := 0;
+	
 begin
 	process(clk_i)
 	begin
 		if(rising_edge(clk_i)) then
---			sec_pr_reg <= sec_pr_reg + '1';		
-			sec_pr_reg <= sec_pr_reg + 1;		
-
-			if (sec_pr_reg >= CLOCK_PRESCALER) then
---				sec_pr_reg <= (others => '0');
-				sec_pr_reg <= 0;
-				sec_clk <= '1';
-				
-				min_pr_reg <= min_pr_reg + 1;
-				if(min_pr_reg = 59) then
-					min_pr_reg <= 0;
-					min_clk <= '1';
-				else
-					min_clk <= '0';
-				end if; -- min_presc = 59
+		
+			presc_reg_1Hz <= presc_reg_1Hz + 1;		
+			if (presc_reg_1Hz >= PRESCALER_1HZ) then
+				presc_reg_1Hz <= 0;
+				out_1Hz <= '1';
 			else
-				sec_clk <= '0';
-			end if; -- presc_reg >= CLOCK_PRESCALER					
+				out_1Hz <= '0';
+			end if; -- 1Hz_pr_reg >= 1HZ_PRESCALER
+
+			presc_reg_2Hz <= presc_reg_2Hz + 1;		
+			if (presc_reg_2Hz >= PRESCALER_2HZ) then
+				presc_reg_2Hz <= 0;
+				out_2Hz <= '1';
+			else
+				out_2Hz <= '0';
+			end if; -- 2Hz_pr_reg >= 2HZ_PRESCALER
+			
+			presc_reg_20Hz <= presc_reg_20Hz + 1;		
+			if (presc_reg_20Hz >= PRESCALER_20HZ) then
+				presc_reg_20Hz <= 0;
+				out_20Hz <= '1';
+			else
+				out_20Hz <= '0';
+			end if; -- 20Hz_pr_reg >= 20HZ_PRESCALER
+
 		end if; -- rising_edge(ClockCore_clk)
 	end process;
-	
-	clk_sec_o <= sec_clk;
-	clk_min_o <= min_clk;
 end Behavioral;

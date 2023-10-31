@@ -12,7 +12,7 @@ package body Math_PACK is
 		variable i: natural;
 	begin
 		i := 0;
-		-- integer - 32bit => максимальное i = 31ю
+		-- integer - 32bit => max i = 31.
 		while (2**i < x) and i < 31 loop
 			i := i+1;
 		end loop;
