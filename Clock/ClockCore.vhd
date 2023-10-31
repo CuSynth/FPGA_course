@@ -14,7 +14,8 @@ end ClockCore;
 
 
 architecture Behavioral of ClockCore is
-
+	
+	signal sec		:	integer range 0 to 60 := 0;
 	signal m1		:	integer range 0 to 10 := 0;
 	signal m10		:	integer range 0 to 6 := 0; 
 	signal h1		:	integer range 0 to 10 := 0; 

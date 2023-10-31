@@ -85,3 +85,4 @@ set_location_assignment PIN_L21 -to fast_clk_tg
 set_location_assignment PIN_R21 -to mins_btn
 set_location_assignment PIN_T21 -to plus_btn
 set_location_assignment PIN_T22 -to set_btn
+set_global_assignment -name VHDL_FILE AlarmCore.vhd
