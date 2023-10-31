@@ -60,8 +60,13 @@ begin
 	if(rising_edge(clk)) then
 		case State is
 		when Tim =>
-			internal_clk <= clk_1Hz;
+			internal_clk  <= clk_1Hz;
+			internal_up   <= '1';
+			internal_down <= '0';
 		when Tim_s =>
+			internal_clk <= clk_2Hz;
+			internal_up   <= Up_btn;
+			internal_down <= Down_btn;	
 		when Alarm_s =>
 		end case;
 	end if;
