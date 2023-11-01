@@ -61,7 +61,6 @@ begin
 					if m10 = 0 then
 						h1 	<= h1 - 1;
 						m10 <= 5;
-						m1 	<= 9;
 
 						if h1 = 0 then
 						  h10 <= h10 - 1;
@@ -71,7 +70,7 @@ begin
 						if h10 = 0 and h1 = 0 then
 							 h10 <= 2;
 							 h1 <= 3;
-						end if; -- h10 h1 == 24
+						end if; -- h10 h1 == 00
 					end if; -- m10
 				end if; -- m1
 			end if; -- CC_down_i = '1'
