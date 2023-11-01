@@ -32,11 +32,20 @@ end entity;
 
 
 architecture rtl of Clock is
+	signal clk_50MHz 	: std_logic;
 	signal clk_1Hz		: std_logic;
 	signal clk_2Hz		: std_logic;
 	signal clk_20Hz		: std_logic;
 	
 	signal cur_time		: std_logic_vector(15 downto 0);
+	
+	component Main_PLL is
+	port
+	(
+		inclk0		: in std_logic;
+		c0			: out std_logic 
+	);
+	end component;
 	
 	component Prescalers is
 		port (
@@ -81,14 +90,15 @@ architecture rtl of Clock is
 	
 begin
 	
+	PLL_map   : Main_PLL port map (inclk0 => clk,
+								   c0 => clk_50MHz);
 
-
-	Presc_map :	Prescalers port map (clk_i	  => clk, 
+	Presc_map :	Prescalers port map (clk_i	  => clk_50MHz, 
 									 out_1Hz  => clk_1Hz,
 									 out_2Hz  => clk_2Hz,
 									 out_20Hz => clk_20Hz);
 	
-	FSM_map : FSM port map (clk 	  => clk,
+	FSM_map : FSM port map (clk 	  => clk_50MHz,
 							clk_1Hz   => clk_1Hz,
 							clk_2Hz   => clk_2Hz,
 							clk_20Hz  => clk_20Hz,
