@@ -41,8 +41,8 @@ set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVTTL"
 set_location_assignment PIN_L1 -to clk
 set_global_assignment -name MISC_FILE "D:/NSU/FPGA/UART_example/UART_example.dpf"
 set_global_assignment -name SOURCE_FILE Main_PLL.cmp
-set_global_assignment -name VHDL_FILE Math_PACK.vhd
 set_global_assignment -name VHDL_FILE Prescalers.vhd
 set_global_assignment -name VHDL_FILE UART_example.vhd
 set_global_assignment -name QIP_FILE Main_PLL.qip
 set_global_assignment -name VHDL_FILE UART.vhd
+set_global_assignment -name VECTOR_WAVEFORM_FILE UART_example.vwf

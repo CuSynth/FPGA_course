@@ -32,8 +32,35 @@ architecture Behavioral of UART is
 	constant Relative_Phase 					: natural := Oversampling_Ratio/2;	-- To determine the middle of start bit
 --	constant Sample_Number_Counter_Size 		: natural := f_log2(Bit_Number_to_be_Processed*Oversampling_Ratio);
 	
+	signal sampling_clk : std_logic;
 	
+	
+	
+	component Prescalers is
+	generic
+	(
+		constant sys_clock	: natural; 	
+		constant req_clock	: natural
+	);
+	port
+	(
+		clk_i	 :	in std_logic;
+		clk_o	 :	out std_logic
+	);
+	end component;
 begin 
 
-
+	presc_map: Prescalers
+		generic map (
+			sys_clock => System_Clock_Speed,
+			req_clock => Nyquist_Sampling_Speed
+			
+		)
+		port map 
+		(
+			clk_i => clk_i,
+			clk_o => sampling_clk
+		); 
+		
+		
 end Behavioral;
