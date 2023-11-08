@@ -6,7 +6,7 @@ use ieee.numeric_std.all;
 entity UART_example is
 	generic (
 		constant Data_Width			: natural := 8; 	-- Data width
-		constant System_Clock		: natural := 100; 	-- 100MHz
+		constant system_clk_freq	: natural := 100; 	-- 100MHz
 		constant Bit_Rate		 	: natural := 1	-- 1MHz
 	);
 	port 
@@ -21,8 +21,8 @@ end entity;
 
 
 architecture rtl of UART_example is
-	signal system_clk : std_logic;
-	
+	signal system_clk 	: std_logic;
+	signal dat			: std_logic_vector(Data_Width-1 downto 0);
 	
 	--------------------------------------
 
@@ -63,7 +63,7 @@ begin
 	UART_map: UART
 		generic map (
 			Word_Width 			=> Data_Width,
-			System_Clock_Speed 	=> System_Clock,
+			System_Clock_Speed 	=> system_clk_freq,
 			Bit_Rate_Value		=> Bit_Rate 
 			
 		)
@@ -72,16 +72,12 @@ begin
 			clk_i	=> system_clk,
 			data_i	=> Input_Data_Line,
 			IRQ_o	=> IRQ,
-			data_o	=> Output_Data_Bus
+			data_o	=> dat
 		); 
 	
 
 	--------------------------------------	
 	
-	process(system_clk)
-	begin 
-	
-	end process;
-
+	Output_Data_Bus <= dat;
 
 end rtl;
