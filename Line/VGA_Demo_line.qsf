@@ -1,0 +1,61 @@
+# Copyright (C) 1991-2008 Altera Corporation
+# Your use of Altera Corporation's design tools, logic functions 
+# and other software and tools, and its AMPP partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Altera Program License 
+# Subscription Agreement, Altera MegaCore Function License 
+# Agreement, or other applicable license agreement, including, 
+# without limitation, that your use is for the sole purpose of 
+# programming logic devices manufactured by Altera and sold by 
+# Altera or its authorized distributors.  Please refer to the 
+# applicable agreement for further details.
+
+
+# The default values for assignments are stored in the file
+#		VGA_Demo_line_assignment_defaults.qdf
+# If this file doesn't exist, and for assignments not listed, see file
+#		assignment_defaults.qdf
+
+# Altera recommends that you do not modify this file. This
+# file is updated automatically by the Quartus II software
+# and any changes you make may be lost or overwritten.
+
+
+set_global_assignment -name FAMILY "Cyclone II"
+set_global_assignment -name DEVICE EP2C20F484C7
+set_global_assignment -name TOP_LEVEL_ENTITY VGA_Demo_line
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 8.1
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "14:02:04  DECEMBER 05, 2022"
+set_global_assignment -name LAST_QUARTUS_VERSION 8.1
+set_global_assignment -name USE_GENERATED_PHYSICAL_CONSTRAINTS OFF -section_id eda_blast_fpga
+set_global_assignment -name SEARCH_PATH lib/
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name LL_ROOT_REGION ON -section_id "Root Region"
+set_global_assignment -name LL_MEMBER_STATE LOCKED -section_id "Root Region"
+set_global_assignment -name VHDL_FILE Math_PACK.vhd
+set_global_assignment -name VHDL_FILE VGA_Demo_line.vhd
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVTTL"
+set_location_assignment PIN_B10 -to B_o[3]
+set_location_assignment PIN_B11 -to Vsync_o
+set_location_assignment PIN_A11 -to Hsync_o
+set_location_assignment PIN_B7 -to R_o[3]
+set_location_assignment PIN_A7 -to R_o[2]
+set_location_assignment PIN_C9 -to R_o[1]
+set_location_assignment PIN_D9 -to R_o[0]
+set_location_assignment PIN_A8 -to G_o[3]
+set_location_assignment PIN_B9 -to G_o[2]
+set_location_assignment PIN_C10 -to G_o[1]
+set_location_assignment PIN_B8 -to G_o[0]
+set_location_assignment PIN_L1 -to clk_i
+set_location_assignment PIN_A10 -to B_o[2]
+set_location_assignment PIN_D11 -to B_o[1]
+set_location_assignment PIN_A9 -to B_o[0]
+set_global_assignment -name MISC_FILE "F:/Users/Alexey/ ÛÒ Õ√” FPGA/VHDL_example/VGA/Line/VGA_Demo_line.dpf"
+set_global_assignment -name QIP_FILE SpriteRAM.qip
+set_global_assignment -name MIF_FILE SpriteRAM_init.mif
