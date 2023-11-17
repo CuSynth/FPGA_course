@@ -38,8 +38,6 @@ set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_global_assignment -name LL_ROOT_REGION ON -section_id "Root Region"
 set_global_assignment -name LL_MEMBER_STATE LOCKED -section_id "Root Region"
-set_global_assignment -name VHDL_FILE Math_PACK.vhd
-set_global_assignment -name VHDL_FILE VGA_Demo_line.vhd
 set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVTTL"
 set_location_assignment PIN_B10 -to B_o[3]
 set_location_assignment PIN_B11 -to Vsync_o
@@ -57,5 +55,14 @@ set_location_assignment PIN_A10 -to B_o[2]
 set_location_assignment PIN_D11 -to B_o[1]
 set_location_assignment PIN_A9 -to B_o[0]
 set_global_assignment -name MISC_FILE "F:/Users/Alexey/ ÛÒ Õ√” FPGA/VHDL_example/VGA/Line/VGA_Demo_line.dpf"
+set_global_assignment -name SOURCE_FILE PLL_VGA.cmp
+set_global_assignment -name QIP_FILE PLL_VGA.qip
+set_global_assignment -name AHDL_FILE PLL_VGA.tdf
+set_global_assignment -name VHDL_FILE SpriteRAM_inst.vhd
+set_global_assignment -name VHDL_FILE VGA_Controller.vhd
+set_global_assignment -name SOURCE_FILE VGA_Synchro.cmp
+set_global_assignment -name AHDL_FILE VGA_Synchro.tdf
+set_global_assignment -name VHDL_FILE Math_PACK.vhd
+set_global_assignment -name VHDL_FILE VGA_Demo_line.vhd
 set_global_assignment -name QIP_FILE SpriteRAM.qip
 set_global_assignment -name MIF_FILE SpriteRAM_init.mif

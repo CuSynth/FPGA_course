@@ -26,10 +26,6 @@ ARCHITECTURE rtl of  VGA_Demo_line IS
 	signal Color_R_s      : STD_LOGIC_VECTOR(3 downto 0);
 	signal Color_G_s      : STD_LOGIC_VECTOR(3 downto 0);
 	signal Color_B_s      : STD_LOGIC_VECTOR(3 downto 0);
-
-	
-	constant square_w : STD_LOGIC_VECTOR(9 downto 0) := std_logic_vector(to_unsigned(50, 10));
-	constant square_h : STD_LOGIC_VECTOR(9 downto 0) := std_logic_vector(to_unsigned(30, 10));
 	
 	signal Pixel_ON       : STD_LOGIC;
 	signal Pixel_ON_Trg_s : STD_LOGIC;
@@ -37,10 +33,18 @@ ARCHITECTURE rtl of  VGA_Demo_line IS
 	signal Y_Coord        : STD_LOGIC_VECTOR(9 downto 0);
 	
 
-	signal LU_x 		  : STD_LOGIC_VECTOR(9 downto 0) := std_logic_vector(to_unsigned(10, 10));	
-	signal LU_y 		  : STD_LOGIC_VECTOR(9 downto 0) := std_logic_vector(to_unsigned(50, 10));	
 
-	signal movement_reg   : integer range 0 to 50000000;
+	signal LU_x 		  : integer range -700 to 700 := 0;
+	signal LU_y 		  : integer range -700 to 700 := 0;
+
+	constant square_w 	  : integer range 0 to 100 := 50;
+	constant square_h 	  : integer range 0 to 100 := 30;	
+
+	signal V_x	  		  : integer range -10 to 10 := 2;	
+	signal V_y 		  	  : integer range -10 to 10 := 1;
+
+
+	signal movement_reg   : integer range 0 to 100;
 
 	COMPONENT VGA_Synchro GENERIC ( Display_Mode : INTEGER := 640; Refrence_Clock_Speed : INTEGER := 25 );
 		PORT
@@ -88,7 +92,7 @@ begin
 					End_of_Frame	=> End_of_Frame_s
 				);
 
-	---------------------------------------- logic ----------------------------------------
+	----------------------------------- Rect draw logic -----------------------------------
 	draw_line : process (Global_Clock) 
 	begin
 		if (rising_edge(Global_Clock)) then 
@@ -103,7 +107,7 @@ begin
 		end if;
 	end process draw_line;
 	
-	---------------------------------------- logic ----------------------------------------
+	----------------------------------- Movement logic -----------------------------------
 	movement: process (clk_i)
 	begin
 		if(rising_edge(clk_i)) then
@@ -112,18 +116,24 @@ begin
 				movement_reg <= movement_reg+1;
 			end if;
 			
-			if(movement_reg >= 5) then
-				LU_x <= LU_x + '1';
-				LU_y <= LU_y + '1';
+			if(movement_reg >= 3) then
 				movement_reg <= 0;
-			end if;
-			
-			
-			if(LU_x = std_logic_vector(to_unsigned(350, 10)) or LU_y = std_logic_vector(to_unsigned(350, 10)))
-			then 
-				LU_x <= (others => '0');
-				LU_y <= (others => '0');
-			end if;
+
+				LU_x <= LU_x +  V_x;
+				if((V_x > 0 and LU_x+V_x+square_w >= 640) or
+					(V_x < 0 and LU_x <= 0))
+				then 
+					V_x <= -1*V_x;
+				end if;
+
+				LU_y <= LU_y +  V_y;
+				if((V_y > 0 and LU_y+V_y+square_h >= 480) or
+					(V_y < 0 and LU_y <= 0))
+				then 
+					V_y <= -1*V_y;
+				end if;
+
+			end if;			
 		end if;
 	end process movement;
 	
