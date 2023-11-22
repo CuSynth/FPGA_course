@@ -1,0 +1,21 @@
+
+
+F:/Users/Alexey/Eo?n IAO FPGA/VHDL_example/ADC_imit/RAM256.vhd
+
+Dec 24 06PM:37:19>: File F:/Users/Alexey/Eo?n IAO FPGA/VHDL_example/ADC_imit/RAM256.cnxerr could not be opened
+
+F:/Users/Alexey/Eo?n IAO FPGA/VHDL_example/ADC_imit/RAM256.vhd
+
+Dec 24 06PM:37:30>: File F:/Users/Alexey/Eo?n IAO FPGA/VHDL_example/ADC_imit/RAM256.cnxerr could not be opened
+
+F:/Users/Alexey/Eo?n IAO FPGA/VHDL_example/ADC_imit/RAM256.vhd
+
+Dec 06 05PM:22:37>: File F:/Users/Alexey/Eo?n IAO FPGA/VHDL_example/ADC_imit/RAM256.cnxerr could not be opened
+
+F:/Users/Alexey/Eo?n IAO FPGA/VHDL_example/ADC_imit/RAM256.vhd
+
+Dec 06 05PM:22:52>: File F:/Users/Alexey/Eo?n IAO FPGA/VHDL_example/ADC_imit/RAM256.cnxerr could not be opened
+
+F:/Users/Alexey/Eo?n IAO FPGA/VHDL_example/ADC_imit/RAM256.vhd
+
+Dec 06 05PM:22:57>: File F:/Users/Alexey/Eo?n IAO FPGA/VHDL_example/ADC_imit/RAM256.cnxerr could not be opened
