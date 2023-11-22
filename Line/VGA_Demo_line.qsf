@@ -58,11 +58,10 @@ set_global_assignment -name MISC_FILE "F:/Users/Alexey/ ÛÒ Õ√” FPGA/VHDL_exampl
 set_global_assignment -name SOURCE_FILE PLL_VGA.cmp
 set_global_assignment -name QIP_FILE PLL_VGA.qip
 set_global_assignment -name AHDL_FILE PLL_VGA.tdf
-set_global_assignment -name VHDL_FILE SpriteRAM_inst.vhd
 set_global_assignment -name VHDL_FILE VGA_Controller.vhd
 set_global_assignment -name SOURCE_FILE VGA_Synchro.cmp
 set_global_assignment -name AHDL_FILE VGA_Synchro.tdf
 set_global_assignment -name VHDL_FILE Math_PACK.vhd
 set_global_assignment -name VHDL_FILE VGA_Demo_line.vhd
-set_global_assignment -name QIP_FILE SpriteRAM.qip
-set_global_assignment -name MIF_FILE SpriteRAM_init.mif
+set_global_assignment -name QIP_FILE picture32x32_w1bit.qip
+set_global_assignment -name MIF_FILE picture32x32_w1bit.mif

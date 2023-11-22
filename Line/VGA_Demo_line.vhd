@@ -31,14 +31,20 @@ ARCHITECTURE rtl of  VGA_Demo_line IS
 	signal Pixel_ON_Trg_s : STD_LOGIC;
 	signal X_Coord        : STD_LOGIC_VECTOR(9 downto 0);
 	signal Y_Coord        : STD_LOGIC_VECTOR(9 downto 0);
+
+	----------------------------------------------------------------------------------------
+
+	signal Global_Clock   : STD_LOGIC;
+
 	
+	signal RAM_data_s	  : STD_LOGIC_VECTOR(0 downto 0);
+	signal RAM_cnt_s	  : std_logic_vector(9 downto 0);
 
+	signal LU_x 		  : integer range -700 to 700 := 10;
+	signal LU_y 		  : integer range -700 to 700 := 10;
 
-	signal LU_x 		  : integer range -700 to 700 := 0;
-	signal LU_y 		  : integer range -700 to 700 := 0;
-
-	constant square_w 	  : integer range 0 to 100 := 50;
-	constant square_h 	  : integer range 0 to 100 := 30;	
+	constant picture_w 	  : integer range 0 to 100 := 32;
+	constant picture_h 	  : integer range 0 to 100 := 32;	
 
 	signal V_x	  		  : integer range -10 to 10 := 2;	
 	signal V_y 		  	  : integer range -10 to 10 := 1;
@@ -46,36 +52,57 @@ ARCHITECTURE rtl of  VGA_Demo_line IS
 
 	signal movement_reg   : integer range 0 to 100;
 
-	COMPONENT VGA_Synchro GENERIC ( Display_Mode : INTEGER := 640; Refrence_Clock_Speed : INTEGER := 25 );
-		PORT
-		(
-			clock			:	 IN STD_LOGIC;
-			X_Coordinate	:	 OUT STD_LOGIC_VECTOR(9 DOWNTO 0);
-			Y_Coordinate	:	 OUT STD_LOGIC_VECTOR(9 DOWNTO 0);
-			vga_h_sync		:	 OUT STD_LOGIC;
-			vga_v_sync		:	 OUT STD_LOGIC;
-			End_of_Frame	:	 OUT STD_LOGIC
-		);
+	----------------------------------------------------------------------------------------
+
+	COMPONENT VGA_Synchro 
+	GENERIC ( 
+		Display_Mode : INTEGER := 640; 
+		Refrence_Clock_Speed : INTEGER := 25 
+	);
+	PORT (
+		clock			:	 IN STD_LOGIC;
+		X_Coordinate	:	 OUT STD_LOGIC_VECTOR(9 DOWNTO 0);
+		Y_Coordinate	:	 OUT STD_LOGIC_VECTOR(9 DOWNTO 0);
+		vga_h_sync		:	 OUT STD_LOGIC;
+		vga_v_sync		:	 OUT STD_LOGIC;
+		End_of_Frame	:	 OUT STD_LOGIC
+	);
 	END COMPONENT;
 	
+	COMPONENT picture32x32_w1bit
+	PORT (
+		address		: IN STD_LOGIC_VECTOR (9 DOWNTO 0);
+		clock		: IN STD_LOGIC ;
+		data		: IN STD_LOGIC_VECTOR (0 DOWNTO 0);
+		wren		: IN STD_LOGIC ;
+		q			: OUT STD_LOGIC_VECTOR (0 DOWNTO 0)
+	);
+	END COMPONENT;
+
+	
 	COMPONENT PLL_VGA
-		PORT
-		(
-			inclk0		: IN STD_LOGIC  := '0';
-			c0			: OUT STD_LOGIC 
-		);
+	PORT (
+		inclk0		: IN STD_LOGIC  := '0';
+		c0			: OUT STD_LOGIC 
+	);
 	end component;
-	signal Global_Clock   : STD_LOGIC;
 
 begin
-	
+		
 	----------------------------------------- PLL ------------------------------------------
     PLL: PLL_VGA
 		port map(
 					inclk0	=> clk_i,
 					c0  	=> Global_Clock
 				);
-
+	----------------------------------------- PLL ------------------------------------------
+    RAM1024_inst : picture32x32_w1bit PORT MAP (
+		address	 => RAM_cnt_s,
+		clock	 => Global_Clock,
+		data	 => (others => '0'),
+		wren	 => '0',
+		q	 	 => RAM_data_s
+	);
 	------------------------------------- VGA controller -----------------------------------
     VGA_ctrl_inst: VGA_Synchro
 		generic map
@@ -96,14 +123,21 @@ begin
 	draw_line : process (Global_Clock) 
 	begin
 		if (rising_edge(Global_Clock)) then 
-			if (((X_coord > LU_x and X_coord < (LU_x+square_w)) and (Y_coord = LU_y or Y_coord = (LU_y+square_h))) or
-				((Y_coord > LU_y and Y_coord < (LU_y+square_h)) and (X_coord = LU_x or X_coord = (LU_x+square_w)))) 
---		if (((X_coord > LU_x and X_coord < (LU_x+square_w)) and (Y_coord > LU_y and Y_coord < (LU_y+square_h)))) 
+		RAM_cnt_s <= RAM_cnt_s + '1';
+--			if(RAM_cnt_s<std_logic_vector(to_unsigned(1024, 9)))
+--			then
+--				RAM_cnt_s <= RAM_cnt_s + '1';
+--			else
+--				RAM_cnt_s <= (others=>'0');
+--			end if;
+			
+			if (((X_coord > LU_x and X_coord < (LU_x+picture_w)) and (Y_coord > LU_y and Y_coord < (LU_y+picture_h)))) 
 			then 
-					Pixel_ON <= '1';
-		    else
-					Pixel_ON <= '0';
+				Pixel_ON <= RAM_data_s(0);
+			else
+				Pixel_ON <= '0';
 			end if;
+			
 		end if;
 	end process draw_line;
 	
@@ -120,14 +154,14 @@ begin
 				movement_reg <= 0;
 
 				LU_x <= LU_x +  V_x;
-				if((V_x > 0 and LU_x+V_x+square_w >= 640) or
+				if((V_x > 0 and LU_x+V_x+picture_w >= 640) or
 					(V_x < 0 and LU_x <= 0))
 				then 
 					V_x <= -1*V_x;
 				end if;
 
 				LU_y <= LU_y +  V_y;
-				if((V_y > 0 and LU_y+V_y+square_h >= 480) or
+				if((V_y > 0 and LU_y+V_y+picture_h >= 480) or
 					(V_y < 0 and LU_y <= 0))
 				then 
 					V_y <= -1*V_y;
