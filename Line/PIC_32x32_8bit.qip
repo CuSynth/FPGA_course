@@ -1,0 +1,6 @@
+set_global_assignment -name IP_TOOL_NAME "RAM: 1-PORT"
+set_global_assignment -name IP_TOOL_VERSION "8.1"
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "PIC_32x32_8bit.vhd"]
+set_global_assignment -name MISC_FILE [file join $::quartus(qip_path) "PIC_32x32_8bit_inst.vhd"]
+set_global_assignment -name MISC_FILE [file join $::quartus(qip_path) "PIC_32x32_8bit.inc"]
+set_global_assignment -name MISC_FILE [file join $::quartus(qip_path) "PIC_32x32_8bit.cmp"]

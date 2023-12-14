@@ -33,13 +33,22 @@ ARCHITECTURE rtl of  VGA_Demo_line IS
 	signal Y_Coord        : STD_LOGIC_VECTOR(9 downto 0);
 
 	----------------------------------------------------------------------------------------
+	-- pic:
+		
+	signal SpritePixelCnt : STD_LOGIC_VECTOR(9 downto 0):="0000000000";	--RAM_cnt_s,
+    signal SpritePixel : STD_LOGIC_VECTOR(7 downto 0);	-- RAM_data_s
+    signal SpritePixelCntEn : STD_LOGIC;
+
+	----------------------------------------------------------------------------------------
+    
 
 	signal Global_Clock   : STD_LOGIC;
 
 	
 	signal RAM_data_s	  : STD_LOGIC_VECTOR(0 downto 0);
 	signal RAM_cnt_s	  : std_logic_vector(9 downto 0);
-
+	signal RAM_cnt_en	  : std_logic;
+	
 	signal LU_x 		  : integer range -700 to 700 := 10;
 	signal LU_y 		  : integer range -700 to 700 := 10;
 
@@ -69,13 +78,13 @@ ARCHITECTURE rtl of  VGA_Demo_line IS
 	);
 	END COMPONENT;
 	
-	COMPONENT picture32x32_w1bit
+	COMPONENT PIC_32x32_8bit
 	PORT (
 		address		: IN STD_LOGIC_VECTOR (9 DOWNTO 0);
 		clock		: IN STD_LOGIC ;
-		data		: IN STD_LOGIC_VECTOR (0 DOWNTO 0);
+		data		: IN STD_LOGIC_VECTOR (7 DOWNTO 0);
 		wren		: IN STD_LOGIC ;
-		q			: OUT STD_LOGIC_VECTOR (0 DOWNTO 0)
+		q			: OUT STD_LOGIC_VECTOR (7 DOWNTO 0)
 	);
 	END COMPONENT;
 
@@ -95,13 +104,13 @@ begin
 					inclk0	=> clk_i,
 					c0  	=> Global_Clock
 				);
-	----------------------------------------- PLL ------------------------------------------
-    RAM1024_inst : picture32x32_w1bit PORT MAP (
-		address	 => RAM_cnt_s,
+	----------------------------------------- RAM ------------------------------------------
+    RAM1024_inst : PIC_32x32_8bit PORT MAP (
+		address	 => SpritePixelCnt,	 
 		clock	 => Global_Clock,
 		data	 => (others => '0'),
 		wren	 => '0',
-		q	 	 => RAM_data_s
+		q	 	 => SpritePixel
 	);
 	------------------------------------- VGA controller -----------------------------------
     VGA_ctrl_inst: VGA_Synchro
@@ -119,32 +128,62 @@ begin
 					End_of_Frame	=> End_of_Frame_s
 				);
 
-	----------------------------------- Rect draw logic -----------------------------------
-	draw_line : process (Global_Clock) 
+	----------------------------------- Picture area logic -----------------------------------
+	draw_pic : process (Global_Clock) 
+--	begin
+--		if (rising_edge(Global_Clock)) then
+--			if (((X_coord >= LU_x and X_coord < (LU_x+picture_w)) and (Y_coord >= LU_y and Y_coord < (LU_y+picture_h)))) 
+--			then 
+--				RAM_cnt_en <= '1';
+--				Pixel_ON <= RAM_data_s(0);
+--			else
+--				RAM_cnt_en <= '0';
+--				Pixel_ON <= '0';
+--			end if;	
+--		end if;
 	begin
 		if (rising_edge(Global_Clock)) then 
-		RAM_cnt_s <= RAM_cnt_s + '1';
---			if(RAM_cnt_s<std_logic_vector(to_unsigned(1024, 9)))
---			then
---				RAM_cnt_s <= RAM_cnt_s + '1';
---			else
---				RAM_cnt_s <= (others=>'0');
---			end if;
-			
-			if (((X_coord > LU_x and X_coord < (LU_x+picture_w)) and (Y_coord > LU_y and Y_coord < (LU_y+picture_h)))) 
-			then 
-				Pixel_ON <= RAM_data_s(0);
-			else
-				Pixel_ON <= '0';
+			if (SpritePixelCntEn='1') then
+				SpritePixelCnt<=SpritePixelCnt+'1';
 			end if;
-			
+			if (End_of_Frame_s='1') then
+				SpritePixelCnt<=(others=>'0');
+			end if;
 		end if;
-	end process draw_line;
+
+		if (X_Coord>LU_x and X_Coord<=(LU_x+picture_w) and Y_Coord>LU_y and Y_Coord<=(LU_y+picture_h)) then
+			Pixel_On<=SpritePixel(0);
+		else
+			Pixel_On<='0';
+		end if;
+		
+		if (X_Coord>=LU_x and X_Coord<(LU_x+picture_w) and Y_Coord>LU_y and Y_Coord<(LU_y+picture_h) ) then
+			SpritePixelCntEn<='1';
+		else
+			SpritePixelCntEn<='0';
+		end if;
+
+	end process draw_pic;
+
+	----------------------------------- RAM addr logic -----------------------------------	
+--	
+--	RAM_addr_cntr : process (Global_Clock)
+--	begin
+--		if(RAM_cnt_en='1')
+--		then
+--			RAM_cnt_s <= RAM_cnt_s + '1';
+--		end if;
+--		
+--		if(End_of_Frame_s='1')
+--		then
+--			RAM_cnt_s <= (others => '0');
+--		end if;		
+--	end process RAM_addr_cntr;
 	
 	----------------------------------- Movement logic -----------------------------------
-	movement: process (clk_i)
+	movement: process (Global_Clock)
 	begin
-		if(rising_edge(clk_i)) then
+		if(rising_edge(Global_Clock)) then
 			if(End_of_Frame_s = '1')
 			then
 				movement_reg <= movement_reg+1;

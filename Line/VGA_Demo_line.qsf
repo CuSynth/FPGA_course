@@ -65,3 +65,5 @@ set_global_assignment -name VHDL_FILE Math_PACK.vhd
 set_global_assignment -name VHDL_FILE VGA_Demo_line.vhd
 set_global_assignment -name QIP_FILE picture32x32_w1bit.qip
 set_global_assignment -name MIF_FILE picture32x32_w1bit.mif
+set_global_assignment -name QIP_FILE PIC_32x32_8bit.qip
+set_global_assignment -name MIF_FILE PIC_32x32_8bit.mif
