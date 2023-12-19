@@ -38,3 +38,5 @@ set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_global_assignment -name LL_ROOT_REGION ON -section_id "Root Region"
 set_global_assignment -name LL_MEMBER_STATE LOCKED -section_id "Root Region"
 set_global_assignment -name VECTOR_WAVEFORM_FILE Test.vwf
+set_global_assignment -name QIP_FILE Test_mem_32_x_1bit.qip
+set_global_assignment -name MIF_FILE Test.mif
