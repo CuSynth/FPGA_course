@@ -38,6 +38,7 @@ ARCHITECTURE rtl of  VGA_Demo_line IS
 	signal SpritePixelCnt : STD_LOGIC_VECTOR(9 downto 0):="0000000000";	--RAM_cnt_s,
     signal SpritePixel : STD_LOGIC_VECTOR(7 downto 0);	-- RAM_data_s
     signal SpritePixelCntEn : STD_LOGIC;
+	signal pic_num 		  : integer range 0 to 3 := 0;
 
 	----------------------------------------------------------------------------------------
     
@@ -45,22 +46,23 @@ ARCHITECTURE rtl of  VGA_Demo_line IS
 	signal Global_Clock   : STD_LOGIC;
 
 	
-	signal RAM_data_s	  : STD_LOGIC_VECTOR(0 downto 0);
+	signal RAM_data_s	  : STD_LOGIC_VECTOR(7 downto 0);
 	signal RAM_cnt_s	  : std_logic_vector(9 downto 0);
 	signal RAM_cnt_en	  : std_logic;
 	
-	signal LU_x 		  : integer range -700 to 700 := 10;
-	signal LU_y 		  : integer range -700 to 700 := 10;
+	signal LU_x 		  : integer range -40 to 700 := 10;
+	signal LU_y 		  : integer range -40 to 700 := 10;
 
 	constant picture_w 	  : integer range 0 to 100 := 32;
 	constant picture_h 	  : integer range 0 to 100 := 32;	
 
-	signal V_x	  		  : integer range -10 to 10 := 2;	
-	signal V_y 		  	  : integer range -10 to 10 := 1;
+	signal V_x	  		  : integer range -10 to 10 := 3;	
+	signal V_y 		  	  : integer range -10 to 10 := 2;
 
 
 	signal movement_reg   : integer range 0 to 100;
-
+	signal anim_reg   : integer range 0 to 100;
+	
 	----------------------------------------------------------------------------------------
 
 	COMPONENT VGA_Synchro 
@@ -87,7 +89,6 @@ ARCHITECTURE rtl of  VGA_Demo_line IS
 		q			: OUT STD_LOGIC_VECTOR (7 DOWNTO 0)
 	);
 	END COMPONENT;
-
 	
 	COMPONENT PLL_VGA
 	PORT (
@@ -105,7 +106,7 @@ begin
 					c0  	=> Global_Clock
 				);
 	----------------------------------------- RAM ------------------------------------------
-    RAM1024_inst : PIC_32x32_8bit PORT MAP (
+	RAM1024_inst : PIC_32x32_8bit PORT MAP (
 		address	 => SpritePixelCnt,	 
 		clock	 => Global_Clock,
 		data	 => (others => '0'),
@@ -129,19 +130,7 @@ begin
 				);
 
 	----------------------------------- Picture area logic -----------------------------------
-	draw_pic : process (Global_Clock) 
---	begin
---		if (rising_edge(Global_Clock)) then
---			if (((X_coord >= LU_x and X_coord < (LU_x+picture_w)) and (Y_coord >= LU_y and Y_coord < (LU_y+picture_h)))) 
---			then 
---				RAM_cnt_en <= '1';
---				Pixel_ON <= RAM_data_s(0);
---			else
---				RAM_cnt_en <= '0';
---				Pixel_ON <= '0';
---			end if;	
---		end if;
-	begin
+	draw_pic : process (Global_Clock) 	begin
 		if (rising_edge(Global_Clock)) then 
 			if (SpritePixelCntEn='1') then
 				SpritePixelCnt<=SpritePixelCnt+'1';
@@ -152,12 +141,15 @@ begin
 		end if;
 
 		if (X_Coord>LU_x and X_Coord<=(LU_x+picture_w) and Y_Coord>LU_y and Y_Coord<=(LU_y+picture_h)) then
-			Pixel_On<=SpritePixel(0);
+			Pixel_On<=SpritePixel(pic_num);
 		else
 			Pixel_On<='0';
 		end if;
 		
-		if (X_Coord>=LU_x and X_Coord<(LU_x+picture_w) and Y_Coord>LU_y and Y_Coord<(LU_y+picture_h) ) then
+		if ((X_Coord>LU_x-1 and X_Coord<(LU_x+picture_w-1) and Y_Coord=LU_y+1) or
+			(X_Coord>=LU_x-1 and X_Coord<(LU_x+picture_w-1) and Y_Coord>LU_y and Y_Coord<(LU_y+picture_h+1)) 
+			
+			) then
 			SpritePixelCntEn<='1';
 		else
 			SpritePixelCntEn<='0';
@@ -165,21 +157,6 @@ begin
 
 	end process draw_pic;
 
-	----------------------------------- RAM addr logic -----------------------------------	
---	
---	RAM_addr_cntr : process (Global_Clock)
---	begin
---		if(RAM_cnt_en='1')
---		then
---			RAM_cnt_s <= RAM_cnt_s + '1';
---		end if;
---		
---		if(End_of_Frame_s='1')
---		then
---			RAM_cnt_s <= (others => '0');
---		end if;		
---	end process RAM_addr_cntr;
-	
 	----------------------------------- Movement logic -----------------------------------
 	movement: process (Global_Clock)
 	begin
@@ -193,23 +170,41 @@ begin
 				movement_reg <= 0;
 
 				LU_x <= LU_x +  V_x;
-				if((V_x > 0 and LU_x+V_x+picture_w >= 640) or
-					(V_x < 0 and LU_x <= 0))
+				if((V_x > 0 and LU_x+V_x+picture_w >= 639) or
+					(V_x < 0 and LU_x <= 5))
 				then 
 					V_x <= -1*V_x;
 				end if;
 
 				LU_y <= LU_y +  V_y;
-				if((V_y > 0 and LU_y+V_y+picture_h >= 480) or
-					(V_y < 0 and LU_y <= 0))
+				if((V_y > 0 and LU_y+V_y+picture_h >= 478) or
+					(V_y < 0 and LU_y <= 2))
 				then 
 					V_y <= -1*V_y;
 				end if;
-
 			end if;			
 		end if;
 	end process movement;
 	
+	anim: process (Global_Clock)
+	begin
+		if(rising_edge(Global_Clock)) then
+			if(End_of_Frame_s = '1')
+			then
+				anim_reg <= anim_reg+1;
+			end if;
+			
+			if(anim_reg >= 6) then
+				anim_reg <= 0;
+
+				pic_num <= pic_num+1;
+				if(pic_num>=2) then
+					pic_num <= 0;
+				end if;
+					
+			end if;			
+		end if;
+	end process anim;
 	
 	
 	-- set line color 
