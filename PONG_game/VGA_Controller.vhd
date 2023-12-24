@@ -1,0 +1,26 @@
+
+--
+--ENTITY VGA_Controller IS
+--PORT(   
+--		clk_i		 : in STD_LOGIC;
+--		
+--		Hsync_o 	 : out STD_LOGIC;
+--		Vsync_o		 : out STD_LOGIC; 
+--		X_Coord 	 : out STD_LOGIC_VECTOR(VGA_Color_Depth-1 downto 0);
+--		Y_Coord 	 : out STD_LOGIC_VECTOR(VGA_Color_Depth-1 downto 0);
+--		End_of_Frame : out STD_LOGIC;
+--	);
+--end  VGA_Controller;
+--
+--ARCHITECTURE rtl of  VGA_Controller IS
+--		signal PLL_Oscillator : STD_LOGIC;
+--		signal Global_Clock   : STD_LOGIC;
+--	
+--		signal Pixel_ON       : STD_LOGIC;
+--		signal X_Coord        : STD_LOGIC_VECTOR(9 downto 0);
+--		signal Y_Coord        : STD_LOGIC_VECTOR(9 downto 0);
+--		
+--	begin
+--
+--
+--END rtl;
