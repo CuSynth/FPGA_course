@@ -1,0 +1,102 @@
+TITLE "VGA_Synchro";
+-- Demonstration VGA Controller
+
+PARAMETERS
+(
+  Display_Mode = 640, 			-- 640x480
+  Refrence_Clock_Speed = 25   	-- MHz
+);
+
+
+
+--VGA 640x480 standard Time Set, absolute units
+Constant Horizontal_Resolution	= 640; --pixels
+CONSTANT VGA_H_Sync_pulse_WIDTH 	= 3800; --ns, Synchronisation pulse
+CONSTANT VGA_H_Subc_pulse_WIDTH 	= 1900; --ns, Subcarrier adjust time
+CONSTANT VGA_H_Visible_time_WIDTH 	= 25400; --ns, Time avalable to display pixels
+CONSTANT VGA_H_Presync_blanc_WIDTH 	= 600; --ns, Blanc time before next HSync
+CONSTANT VGA_H_Total_time_WIDTH = VGA_H_Sync_pulse_WIDTH + VGA_H_Subc_pulse_WIDTH + VGA_H_Visible_time_WIDTH + VGA_H_Presync_blanc_WIDTH; --ns,
+
+CONSTANT Vertical_Resolution	=	480;
+CONSTANT VGA_V_Sync_pulse_WIDTH =	2; --lines, Synchronisation pulse
+CONSTANT VGA_V_Subc_pulse_WIDTH =	33; --lines, 
+CONSTANT VGA_V_Visible_time_WIDTH = 480; --lines, Time avalable to display pixels
+CONSTANT VGA_V_Presync_blanc_WIDTH = 10; --lines, Blanc time before next VSync
+CONSTANT VGA_V_Total_time_WIDTH = VGA_V_Sync_pulse_WIDTH + VGA_V_Subc_pulse_WIDTH + VGA_V_Visible_time_WIDTH + VGA_V_Presync_blanc_WIDTH; --lines,
+
+-- Converting absolute units to clock units
+CONSTANT VGA_H_Sync_pulse_WIDTH_clk 	= ((VGA_H_Sync_pulse_WIDTH * Refrence_Clock_Speed) div 1000);
+CONSTANT VGA_H_Subc_pulse_WIDTH_clk 	= ((VGA_H_Subc_pulse_WIDTH * Refrence_Clock_Speed) div 1000);
+CONSTANT VGA_H_Visible_time_WIDTH_clk 	= ((VGA_H_Visible_time_WIDTH * Refrence_Clock_Speed) div 1000);
+CONSTANT VGA_H_Presync_blanc_WIDTH_clk 	= ((VGA_H_Presync_blanc_WIDTH * Refrence_Clock_Speed) div 1000);
+Constant End_of_Line_clk				= ((VGA_H_Total_time_WIDTH * Refrence_Clock_Speed) div 1000);
+
+CONSTANT VGA_Pointers_WIDTH =  ceil (LOG2 (End_of_Line_clk));
+INCLUDE "lpm_counter.inc";
+
+
+SUBDESIGN VGA_Synchro
+(
+Clock		                            : input;
+X_Coordinate[VGA_Pointers_WIDTH-1..0]	: output;
+Y_Coordinate[VGA_Pointers_WIDTH-1..0]	: output;
+
+vga_h_sync, vga_v_sync					: output;   -- Active High, to be inverted at output pin
+End_of_Frame							: output;	--Single Clock width
+
+
+)
+
+Variable 
+
+H_AbsolutePosition_CNT	: Lpm_counter with (lpm_width=VGA_Pointers_WIDTH);
+End_of_Line				: node;
+H_Pixel_CNT				: Lpm_counter with (lpm_width=VGA_Pointers_WIDTH);
+
+V_AbsolutePosition_CNT	: Lpm_counter with (lpm_width=VGA_Pointers_WIDTH);
+Finish_Line_in_progress	: node;
+V_Pixel_CNT				: Lpm_counter with (lpm_width=VGA_Pointers_WIDTH);
+
+
+begin
+
+--Main Loops Section
+H_AbsolutePosition_CNT.clock	=	Clock;
+H_AbsolutePosition_CNT.sclr		=	End_of_Line;
+End_of_Line = H_AbsolutePosition_CNT.q[] == (End_of_Line_clk) ;
+
+V_AbsolutePosition_CNT.clock	=	Clock;
+V_AbsolutePosition_CNT.sclr		=	Finish_Line_in_progress AND End_of_Line;
+V_AbsolutePosition_CNT.cnt_en	=	End_of_Line;
+
+Finish_Line_in_progress	=	V_AbsolutePosition_CNT.q[] == (VGA_V_Total_time_WIDTH -1);
+End_of_Frame	=	DFF(.clk=Clock, .d=(Finish_Line_in_progress AND End_of_Line));
+--X_Coordinate[VGA_Pointers_WIDTH-1..0]	=	H_AbsolutePosition_CNT.q[];
+--Y_Coordinate[VGA_Pointers_WIDTH-1..0]	=	V_AbsolutePosition_CNT.q[];
+
+--Synchro  generating Section
+
+vga_h_sync	=	DFF(.clk=Clock, .d=(	H_AbsolutePosition_CNT.q[] <= (VGA_H_Sync_pulse_WIDTH_clk - 1)	)); 
+
+vga_v_sync	=	DFF(.clk=Clock, .d=(	V_AbsolutePosition_CNT.q[] <= (VGA_V_Sync_pulse_WIDTH - 1)	));
+
+
+-- Display Time Pixel's coordinates
+
+H_Pixel_CNT.clock	=	Clock;
+H_Pixel_CNT.sclr	=	(	H_AbsolutePosition_CNT.q[] == (VGA_H_Sync_pulse_WIDTH_clk + VGA_H_Subc_pulse_WIDTH_clk - 1)	);
+H_Pixel_CNT.cnt_en	=	NOT (H_Pixel_CNT.q[]	== Horizontal_Resolution);
+
+V_Pixel_CNT.clock	=	Clock;
+V_Pixel_CNT.sclr	=	((	V_AbsolutePosition_CNT.q[] == (VGA_V_Sync_pulse_WIDTH + VGA_V_Subc_pulse_WIDTH - 1)	)  AND End_of_Line);
+V_Pixel_CNT.cnt_en	=	End_of_Line AND (NOT (V_Pixel_CNT.q[]	== VGA_V_Visible_time_WIDTH));
+
+
+X_Coordinate[VGA_Pointers_WIDTH-1..0]	=	H_Pixel_CNT.q[];
+Y_Coordinate[VGA_Pointers_WIDTH-1..0]	=	V_Pixel_CNT.q[];
+
+
+end;
+
+
+
