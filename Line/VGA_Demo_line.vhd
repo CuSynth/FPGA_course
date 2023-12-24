@@ -56,8 +56,8 @@ ARCHITECTURE rtl of  VGA_Demo_line IS
 	constant picture_w 	  : integer range 0 to 100 := 32;
 	constant picture_h 	  : integer range 0 to 100 := 32;	
 
-	signal V_x	  		  : integer range -10 to 10 := 3;	
-	signal V_y 		  	  : integer range -10 to 10 := 2;
+	signal V_x	  		  : integer range -10 to 10 := 0;	
+	signal V_y 		  	  : integer range -10 to 10 := 0;
 
 
 	signal movement_reg   : integer range 0 to 100;
@@ -141,7 +141,7 @@ begin
 		end if;
 
 		if (X_Coord>LU_x and X_Coord<=(LU_x+picture_w) and Y_Coord>LU_y and Y_Coord<=(LU_y+picture_h)) then
-			Pixel_On<=SpritePixel(pic_num);
+			Pixel_On<=SpritePixel(pic_num+3);
 		else
 			Pixel_On<='0';
 		end if;
@@ -194,7 +194,7 @@ begin
 				anim_reg <= anim_reg+1;
 			end if;
 			
-			if(anim_reg >= 6) then
+			if(anim_reg >= 70) then
 				anim_reg <= 0;
 
 				pic_num <= pic_num+1;
