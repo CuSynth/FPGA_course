@@ -62,7 +62,7 @@ architecture rtl of PONG is
 
 	----- Border -----
 	component BorderDrawer
-		generic (
+	generic (
 		constant ColorDepth : natural;
 		constant R_color	: natural;
 		constant G_color	: natural;
@@ -85,7 +85,39 @@ architecture rtl of PONG is
 		B_o 	: out std_logic_vector(ColorDepth-1 downto 0)
 	);
 	end component;
+	----- Player -----
+	component PlayerRect
+	generic (
+		constant ColorDepth : natural;
+		constant R_color	: natural;
+		constant G_color	: natural;
+		constant B_color	: natural;
 
+		constant MaxSpeed   : natural;
+		
+		constant wdth   	: natural;
+		constant depth   	: natural;
+
+		constant Pos_x   	: natural
+		
+	);	
+
+	port(
+		clk_i	: in std_logic;
+
+		EOF		: in std_logic;
+		Cur_x	: in std_logic_vector(9 downto 0);
+		Cur_y	: in std_logic_vector(9 downto 0);		
+		
+		btn_up	: in std_logic;
+		btn_dn	: in std_logic;
+
+		R_o 	: out std_logic_vector(ColorDepth-1 downto 0);
+		G_o 	: out std_logic_vector(ColorDepth-1 downto 0);
+		B_o 	: out std_logic_vector(ColorDepth-1 downto 0)
+	);
+
+	end component;
 
 
 	--------------------------- Signals ---------------------------
@@ -101,6 +133,9 @@ architecture rtl of PONG is
 	signal Border_G_s      	: std_logic_vector(3 downto 0);
 	signal Border_B_s      	: std_logic_vector(3 downto 0);
 	
+	signal Player_R_s      	: std_logic_vector(3 downto 0);
+	signal Player_G_s      	: std_logic_vector(3 downto 0);
+	signal Player_B_s      	: std_logic_vector(3 downto 0);
 
 	----- Common -----
 	signal Global_Clock		: std_logic;
@@ -161,13 +196,43 @@ begin
 	);
 
 
+	----- PlayerRect -----
+	PlayerRect_inst : PlayerRect
+	generic map (
+		ColorDepth => VGA_Color_Depth,
+		R_color	=> 15,
+		G_color	=> 8,
+		B_color	=> 10,
+
+		MaxSpeed => 10,
+		
+		wdth => 20,
+		depth => 3,
+
+		Pos_x => 620
+	)
+	port map(
+		clk_i => Global_Clock,
+
+		EOF => End_of_Frame_s,
+		Cur_x => X_Coord,
+		Cur_y => Y_Coord,	
+		
+		btn_up => up_btn,
+		btn_dn => dn_btn,
+
+		R_o => Player_R_s,
+		G_o => Player_G_s,
+		B_o => Player_B_s
+	);
+
+
 	--------------------------- Logic ---------------------------
 
-		R_o <= Border_R_s;
-		G_o <= Border_G_s;
-		B_o <= Border_B_s;
-
-
+	R_o <= Border_R_s or Player_R_s;
+	G_o <= Border_G_s or Player_G_s;
+	B_o <= Border_B_s or Player_B_s;
+	
 	dn_LED <= dn_btn;		
 	up_LED <= up_btn;
 end rtl;
