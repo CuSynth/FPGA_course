@@ -74,3 +74,4 @@ set_global_assignment -name VHDL_FILE Writer.vhd
 set_global_assignment -name VHDL_FILE Ball.vhd
 set_global_assignment -name QIP_FILE Ball_sprite_mem.qip
 set_global_assignment -name MIF_FILE Ball_sprite.mif
+set_global_assignment -name VHDL_FILE PosControl.vhd

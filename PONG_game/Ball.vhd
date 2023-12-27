@@ -10,10 +10,7 @@ entity Ball is
 		constant ColorDepth : natural;
 		constant R_color	: natural;
 		constant G_color	: natural;
-		constant B_color	: natural;
-
-		constant PosX		: natural;
-		constant PosY		: natural
+		constant B_color	: natural
 		);	
 
 	port(
@@ -22,6 +19,9 @@ entity Ball is
 		EOF		: in std_logic;
 		Cur_x	: in std_logic_vector(9 downto 0);
 		Cur_y	: in std_logic_vector(9 downto 0);		
+		
+		PosX	: in natural;
+		PosY	: in natural;
 		
 		R_o 	: out std_logic_vector(ColorDepth-1 downto 0);
 		G_o 	: out std_logic_vector(ColorDepth-1 downto 0);

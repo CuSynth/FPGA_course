@@ -19,8 +19,7 @@ entity PlayerRect is
 		constant wdth   	: natural;
 		constant depth   	: natural;
 
-		constant Pos_x   	: natural
-		
+		constant Pos_x   	: natural		
 	);	
 
 	port(
@@ -32,6 +31,10 @@ entity PlayerRect is
 		
 		btn_up	: in std_logic;
 		btn_dn	: in std_logic;
+
+		Carr_X 	: out integer range 0 to 640;
+		Carr_Y	: out integer range 0 to 480;
+		Carr_V	: out integer range -10 to 10;
 
 		R_o 	: out std_logic_vector(ColorDepth-1 downto 0);
 		G_o 	: out std_logic_vector(ColorDepth-1 downto 0);

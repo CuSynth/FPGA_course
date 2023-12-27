@@ -141,6 +141,10 @@ architecture rtl of PONG is
 		btn_up	: in std_logic;
 		btn_dn	: in std_logic;
 
+		Carr_X 	: out integer range 0 to 640;
+		Carr_Y	: out integer range 0 to 480;
+		Carr_V	: out integer range -10 to 10;
+
 		R_o 	: out std_logic_vector(ColorDepth-1 downto 0);
 		G_o 	: out std_logic_vector(ColorDepth-1 downto 0);
 		B_o 	: out std_logic_vector(ColorDepth-1 downto 0)
@@ -182,10 +186,7 @@ architecture rtl of PONG is
 		constant ColorDepth : natural;
 		constant R_color	: natural;
 		constant G_color	: natural;
-		constant B_color	: natural;
-
-		constant PosX		: natural;
-		constant PosY		: natural
+		constant B_color	: natural
 	);	
 
 	port(
@@ -195,9 +196,44 @@ architecture rtl of PONG is
 		Cur_x	: in std_logic_vector(9 downto 0);
 		Cur_y	: in std_logic_vector(9 downto 0);		
 
+		PosX	: in natural;
+		PosY	: in natural;
+
 		R_o 	: out std_logic_vector(ColorDepth-1 downto 0);
 		G_o 	: out std_logic_vector(ColorDepth-1 downto 0);
 		B_o 	: out std_logic_vector(ColorDepth-1 downto 0)
+	);
+	end component;
+
+	----- Pos controller -----
+	component PosControl
+	generic (
+		carriage_w 	: natural;
+		carriage_h 	: natural;
+		
+		ball_w  	: natural;
+		ball_h		: natural;
+		
+		brd_L		: natural;
+		brd_R		: natural;
+		brd_U		: natural;
+		brd_D		: natural
+	);
+	port(
+		clk_i	: in std_logic;
+
+		EOF		: in std_logic;
+
+		Carr_X 	: in integer range 0 to 640;
+		Carr_Y	: in integer range 0 to 480;
+		Carr_V	: in integer range -10 to 10;
+		
+		Ball_X_o	: out integer range 0 to 640;
+		Ball_Y_o	: out integer range 0 to 480;
+		
+		
+		Fall	: out std_logic;
+		Touch	: out std_logic
 	);
 	end component;
 
@@ -228,6 +264,15 @@ architecture rtl of PONG is
 
 	----- Common -----
 	signal Global_Clock		: std_logic;
+	signal Carr_X		: integer range 0 to 640;
+	signal Carr_Y		: integer range 0 to 480;
+	signal Carr_V		: integer range -10 to 10;
+	
+	signal Ball_X		: integer range 0 to 640;
+	signal Ball_Y		: integer range 0 to 480;
+	
+	signal Touch		: std_logic;
+	signal Fall			: std_logic;
 	
 begin
 	--------------------------- Mapping ---------------------------
@@ -307,6 +352,10 @@ begin
 		btn_up => up_btn,
 		btn_dn => dn_btn,
 
+		Carr_X => Carr_X,
+		Carr_Y => Carr_Y,
+		Carr_V => Carr_V,
+
 		R_o => Player_R_s,
 		G_o => Player_G_s,
 		B_o => Player_B_s
@@ -344,10 +393,7 @@ begin
 		ColorDepth => VGA_Color_Depth,
 		R_color	=> ball_col_R,
 		G_color	=> ball_col_G,
-		B_color	=> ball_col_B,
-
-		PosX => 300,
-		PosY => 130
+		B_color	=> ball_col_B
 	)
 	port map(
 		clk_i => Global_Clock,
@@ -356,11 +402,44 @@ begin
 		Cur_x => X_Coord,
 		Cur_y => Y_Coord,			
 		
+		PosX => Ball_X,
+		PosY => Ball_Y,
+		
 		R_o => Ball_R_s,
 		G_o => Ball_G_s,
 		B_o => Ball_B_s
 	);
-	
+	----- Pos controller -----
+	Pos_controller: PosControl
+	generic map(
+		carriage_w 	=> carriage_depth,
+		carriage_h 	=> carriage_width,
+		
+		ball_w  	=> 32,
+		ball_h		=> 32,
+		
+		brd_L		=> Border_L,
+		brd_R		=> Border_R,
+		brd_U		=> Border_U,
+		brd_D		=> Border_D
+	)
+	port map(
+		clk_i	=> Global_Clock,
+
+		EOF		=> End_of_Frame_s,
+
+		Carr_X 	=> Carr_X,
+		Carr_Y	=> Carr_Y,
+		Carr_V	=> Carr_V,
+		
+		Ball_X_o	=> Ball_X,
+		Ball_Y_o	=> Ball_Y,
+		
+		
+		Fall	=> Fall,
+		Touch	=> Touch
+	);
+
 	
 	--------------------------- Logic ---------------------------
 
