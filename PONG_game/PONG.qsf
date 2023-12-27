@@ -66,3 +66,4 @@ set_global_assignment -name SOURCE_FILE VGA_PLL.cmp
 set_global_assignment -name AHDL_FILE VGA_Synchro.tdf
 set_global_assignment -name VHDL_FILE PONG.vhd
 set_global_assignment -name QIP_FILE VGA_PLL.qip
+set_global_assignment -name VHDL_FILE BorderDrawer.vhd

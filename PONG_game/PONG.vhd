@@ -36,7 +36,7 @@ end  PONG;
 architecture rtl of PONG is
 	--------------------------- Components ---------------------------
 
-	--- PLL 100MHz ---
+	----- PLL 100MHz -----
 	component VGA_PLL
 	port (
 		inclk0		: in std_logic := '0';
@@ -44,13 +44,13 @@ architecture rtl of PONG is
 	);
 	end component;
 
-	--- VGA ---
-	COMPONENT VGA_Synchro 
-	GENERIC ( 
-		Display_Mode : INTEGER := 640; 
-		Refrence_Clock_Speed : INTEGER := 25 
+	----- VGA -----
+	component VGA_Synchro 
+	generic ( 
+		Display_Mode 			: integer := 640; 
+		Refrence_Clock_Speed	: integer := 25 
 	);
-	PORT (
+	port (
 		clock			:	 in std_logic;
 		X_Coordinate	:	 out std_logic_vector(9 DOWNTO 0);
 		Y_Coordinate	:	 out std_logic_vector(9 DOWNTO 0);
@@ -58,36 +58,68 @@ architecture rtl of PONG is
 		vga_v_sync		:	 out std_logic;
 		End_of_Frame	:	 out std_logic
 	);
-	END COMPONENT;
+	end component;
+
+	----- Border -----
+	component BorderDrawer
+		generic (
+		constant ColorDepth : natural;
+		constant R_color	: natural;
+		constant G_color	: natural;
+		constant B_color	: natural;
+
+		constant Up 		: natural;
+		constant Dwn 		: natural;
+		constant Lft 		: natural;
+		constant Rght 		: natural
+	);	
+
+	port(
+		clk_i	: in std_logic;
+
+		Cur_x	: in std_logic_vector(9 downto 0);
+		Cur_y	: in std_logic_vector(9 downto 0);		
+		
+		R_o 	: out std_logic_vector(ColorDepth-1 downto 0);
+		G_o 	: out std_logic_vector(ColorDepth-1 downto 0);
+		B_o 	: out std_logic_vector(ColorDepth-1 downto 0)
+	);
+	end component;
+
+
 
 	--------------------------- Signals ---------------------------
 		
-	--- VGA ---
-	signal End_of_Frame_s : std_logic;
-	signal Color_R_s      : std_logic_vector(3 downto 0);
-	signal Color_G_s      : std_logic_vector(3 downto 0);
-	signal Color_B_s      : std_logic_vector(3 downto 0);
-	
-	signal Pixel_ON       : std_logic;
-	signal Pixel_ON_Trg_s : std_logic;
-	signal X_Coord        : std_logic_vector(9 downto 0);
-	signal Y_Coord        : std_logic_vector(9 downto 0);
+	----- VGA -----
+	signal End_of_Frame_s 	: std_logic;
 
-	--- Common ---
-	signal Global_Clock	: std_logic;
+	signal X_Coord        	: std_logic_vector(9 downto 0);
+	signal Y_Coord        	: std_logic_vector(9 downto 0);
+
+	----- Connections -----
+	signal Border_R_s      	: std_logic_vector(3 downto 0);
+	signal Border_G_s      	: std_logic_vector(3 downto 0);
+	signal Border_B_s      	: std_logic_vector(3 downto 0);
+	
+
+	----- Common -----
+	signal Global_Clock		: std_logic;
+	
+	
+	
 	
 	
 begin
 	--------------------------- Mapping ---------------------------
 	
-	--- PLL ---
+	----- PLL -----
     PLL: VGA_PLL
 	port map(
 		inclk0	=> clk_i,
 		c0  	=> Global_Clock
 	);
 	
-	--- VGA ---
+	----- VGA -----
 	VGA_ctrl_inst: VGA_Synchro
 	generic map (
 		Display_Mode => 640,
@@ -101,28 +133,40 @@ begin
 		vga_v_sync		=> Vsync_o,
 		End_of_Frame	=> End_of_Frame_s
 	);
+	
+	----- Border -----
+	Border_inst: BorderDrawer
+	generic map (
+	
+		ColorDepth => VGA_Color_Depth,
+		R_color	=> 15,
+		G_color	=> 15,
+		B_color	=> 15,
+
+		Lft => 10,
+		Rght => 630,
+		
+		Up => 10,
+		Dwn => 470
+	)
+	port map(
+		clk_i => Global_Clock,
+
+		Cur_x => X_Coord,
+		Cur_y => Y_Coord,	
+		
+		R_o => Border_R_s,
+		G_o => Border_G_s,
+		B_o => Border_B_s
+	);
+
 
 	--------------------------- Logic ---------------------------
 
-	sq: process(Global_Clock)
-	begin
-		if((X_Coord > 15 and X_Coord < 25) and (Y_Coord > 15 and Y_Coord < 25))
-		then
-			Pixel_ON <= '1';
-		else 
-			Pixel_ON <= '0';
-		end if;
-	end process sq;
+		R_o <= Border_R_s;
+		G_o <= Border_G_s;
+		B_o <= Border_B_s;
 
-	Color_R_s <= std_logic_vector(to_unsigned(0, 4));
-	Color_G_s <= std_logic_vector(to_unsigned(15, 4));
-	Color_B_s <= std_logic_vector(to_unsigned(15, 4));
-
-	DAC_out : for i in 0 to 3 generate
-		R_o(i)		<=	Color_R_s(i) and Pixel_ON;
-		G_o(i)		<=	Color_G_s(i) and Pixel_ON; 
-		B_o(i)		<=	Color_B_s(i) and Pixel_ON;
-	end generate DAC_out;
 
 	dn_LED <= dn_btn;		
 	up_LED <= up_btn;
