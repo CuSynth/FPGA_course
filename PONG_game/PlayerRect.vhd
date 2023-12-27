@@ -12,7 +12,9 @@ entity PlayerRect is
 		constant G_color	: natural;
 		constant B_color	: natural;
 
-		constant MaxSpeed   : natural;
+		constant Speed   	: natural;
+		constant MinY		: natural;
+		constant MaxY		: natural;
 		
 		constant wdth   	: natural;
 		constant depth   	: natural;
@@ -47,25 +49,58 @@ architecture Behavioral of PlayerRect is
 	signal Color_G_s 	: std_logic_vector(ColorDepth-1 downto 0) := std_logic_vector(to_unsigned(G_color, ColorDepth));
 	signal Color_B_s    : std_logic_vector(ColorDepth-1 downto 0) := std_logic_vector(to_unsigned(B_color, ColorDepth));
 
-	signal speed 		: integer range -MaxSpeed to MaxSpeed;
+	signal CurSpeed 	: integer range -Speed to Speed;
 	
 	signal LU_x 		: integer range 0 to 640 := Pos_x;
 	signal LU_y 		: integer range 0 to 480 := 230;
-
-	signal counter		: std_logic_vector(4 downto 0);
-	
+		
 begin
+	btn_process : process (clk_i)
+	begin
+		if(rising_edge(clk_i))
+		then
+			if(EOF = '1')
+			then
+				if(btn_up = '1')
+				then
+
+					CurSpeed <= Speed;
+				elsif (btn_dn = '1')
+				then
+					CurSpeed <= -1*Speed;
+				else
+					CurSpeed <= 0;			
+				end if;
+			end if;
+		end if;	
+	end process btn_process;
+	
+	move : process (clk_i)
+	begin
+		if(rising_edge(clk_i))
+		then
+			if(EOF = '1')
+			then
+				if(LU_y+CurSpeed >= MinY and LU_y+CurSpeed+wdth <= MaxY)
+				then
+					LU_y <= LU_y+CurSpeed;
+				end if;
+				
+			end if;
+		end if;	
+	end process move;
+
+
+
 
 	draw : process (clk_i)
 	begin
-	
 	if (Cur_x >= LU_x and Cur_x <= LU_x+depth and Cur_y >= LU_y and Cur_y <= LU_y+wdth)
 	then
 		Pixel_ON<='1';
 	else
 		Pixel_ON<='0';
 	end if;	
-
 	end process draw;
 
 		

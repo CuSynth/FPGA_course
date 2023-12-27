@@ -93,7 +93,9 @@ architecture rtl of PONG is
 		constant G_color	: natural;
 		constant B_color	: natural;
 
-		constant MaxSpeed   : natural;
+		constant Speed   	: natural;
+		constant MinY		: natural;
+		constant MaxY		: natural;
 		
 		constant wdth   	: natural;
 		constant depth   	: natural;
@@ -204,9 +206,11 @@ begin
 		G_color	=> 8,
 		B_color	=> 10,
 
-		MaxSpeed => 10,
+		Speed => 3,
+		MinY => 15,
+		MaxY => 465,
 		
-		wdth => 20,
+		wdth => 25,
 		depth => 3,
 
 		Pos_x => 620
