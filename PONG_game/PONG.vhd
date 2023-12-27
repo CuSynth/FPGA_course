@@ -7,7 +7,33 @@ USE IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity PONG is
 
 generic (
-	VGA_Color_Depth : natural := 4
+	VGA_Color_Depth : natural := 4;
+	
+	Border_col_R	: natural := 15;
+	Border_col_G	: natural := 15;
+	Border_col_B	: natural := 15;
+	
+	carriage_col_R	: natural := 15;
+	carriage_col_G	: natural := 8;
+	carriage_col_B	: natural := 10;
+
+	counter_col_R	: natural := 15;
+	counter_col_G	: natural := 4;
+	counter_col_B	: natural := 4;
+
+	ball_col_R		: natural := 8;
+	ball_col_G		: natural := 10;
+	ball_col_B		: natural := 13;
+	
+	Border_L		: natural := 10;
+	Border_R		: natural := 630;
+	Border_U		: natural := 10;
+	Border_D		: natural := 470;
+	
+	carriage_x		: natural := 620;
+	carriage_width	: natural := 25;
+	carriage_depth	: natural := 3;
+	carriage_speed	: natural := 4
 );
 
 port (   
@@ -36,7 +62,7 @@ end  PONG;
 architecture rtl of PONG is
 	--------------------------- Components ---------------------------
 
-	----- PLL 100MHz -----
+	----- PLL 25MHz -----
 	component VGA_PLL
 	port (
 		inclk0		: in std_logic := '0';
@@ -85,6 +111,7 @@ architecture rtl of PONG is
 		B_o 	: out std_logic_vector(ColorDepth-1 downto 0)
 	);
 	end component;
+	
 	----- Player -----
 	component PlayerRect
 	generic (
@@ -120,7 +147,59 @@ architecture rtl of PONG is
 	);
 
 	end component;
+	
+	----- Counter -----
+	component Writer
+	generic (
+		constant ColorDepth : natural;
+		constant R_color	: natural;
+		constant G_color	: natural;
+		constant B_color	: natural;
 
+		constant PosX		: natural;
+		constant PosY		: natural
+	);	
+
+	port(
+		clk_i	: in std_logic;
+
+		EOF		: in std_logic;
+		Cur_x	: in std_logic_vector(9 downto 0);
+		Cur_y	: in std_logic_vector(9 downto 0);		
+		
+		to_show : in natural;
+
+
+		R_o 	: out std_logic_vector(ColorDepth-1 downto 0);
+		G_o 	: out std_logic_vector(ColorDepth-1 downto 0);
+		B_o 	: out std_logic_vector(ColorDepth-1 downto 0)
+	);
+	end component;
+
+	----- Ball -----
+	component Ball
+	generic (
+		constant ColorDepth : natural;
+		constant R_color	: natural;
+		constant G_color	: natural;
+		constant B_color	: natural;
+
+		constant PosX		: natural;
+		constant PosY		: natural
+	);	
+
+	port(
+		clk_i	: in std_logic;
+
+		EOF		: in std_logic;
+		Cur_x	: in std_logic_vector(9 downto 0);
+		Cur_y	: in std_logic_vector(9 downto 0);		
+
+		R_o 	: out std_logic_vector(ColorDepth-1 downto 0);
+		G_o 	: out std_logic_vector(ColorDepth-1 downto 0);
+		B_o 	: out std_logic_vector(ColorDepth-1 downto 0)
+	);
+	end component;
 
 	--------------------------- Signals ---------------------------
 		
@@ -139,12 +218,16 @@ architecture rtl of PONG is
 	signal Player_G_s      	: std_logic_vector(3 downto 0);
 	signal Player_B_s      	: std_logic_vector(3 downto 0);
 
+	signal Counter_R_s      : std_logic_vector(3 downto 0);
+	signal Counter_G_s      : std_logic_vector(3 downto 0);
+	signal Counter_B_s      : std_logic_vector(3 downto 0);
+
+	signal Ball_R_s      	: std_logic_vector(3 downto 0);
+	signal Ball_G_s      	: std_logic_vector(3 downto 0);
+	signal Ball_B_s      	: std_logic_vector(3 downto 0);
+
 	----- Common -----
 	signal Global_Clock		: std_logic;
-	
-	
-	
-	
 	
 begin
 	--------------------------- Mapping ---------------------------
@@ -176,15 +259,15 @@ begin
 	generic map (
 	
 		ColorDepth => VGA_Color_Depth,
-		R_color	=> 15,
-		G_color	=> 15,
-		B_color	=> 15,
+		R_color	=> Border_col_R,
+		G_color	=> Border_col_G,
+		B_color	=> Border_col_B,
 
-		Lft => 10,
-		Rght => 630,
+		Lft => Border_L,
+		Rght => Border_R,
 		
-		Up => 10,
-		Dwn => 470
+		Up => Border_U,
+		Dwn => Border_D
 	)
 	port map(
 		clk_i => Global_Clock,
@@ -197,23 +280,22 @@ begin
 		B_o => Border_B_s
 	);
 
-
 	----- PlayerRect -----
-	PlayerRect_inst : PlayerRect
+	PlayerRect_inst: PlayerRect
 	generic map (
 		ColorDepth => VGA_Color_Depth,
-		R_color	=> 15,
-		G_color	=> 8,
-		B_color	=> 10,
+		R_color	=> carriage_col_R,
+		G_color	=> carriage_col_G,
+		B_color	=> carriage_col_B,
 
-		Speed => 3,
-		MinY => 15,
-		MaxY => 465,
+		Speed => carriage_speed,
+		MinY => Border_U+5,
+		MaxY => Border_D-5,
 		
-		wdth => 25,
-		depth => 3,
+		wdth => carriage_width,
+		depth => carriage_depth,
 
-		Pos_x => 620
+		Pos_x => carriage_x
 	)
 	port map(
 		clk_i => Global_Clock,
@@ -230,12 +312,61 @@ begin
 		B_o => Player_B_s
 	);
 
+	----- Counter -----
+	Writer_inst: Writer
+	generic map (
+		ColorDepth => VGA_Color_Depth,
+		R_color	=> counter_col_R,
+		G_color	=> counter_col_G,
+		B_color	=> counter_col_B,
 
+		PosX => 300,
+		PosY => 30
+	)
+	port map(
+		clk_i => Global_Clock,
+
+		EOF => End_of_Frame_s,
+		Cur_x => X_Coord,
+		Cur_y => Y_Coord,			
+		
+		to_show => 10,
+
+
+		R_o => Counter_R_s,
+		G_o => Counter_G_s,
+		B_o => Counter_B_s
+	);
+	
+	----- Ball -----
+	Ball_inst: Ball
+	generic map (
+		ColorDepth => VGA_Color_Depth,
+		R_color	=> ball_col_R,
+		G_color	=> ball_col_G,
+		B_color	=> ball_col_B,
+
+		PosX => 300,
+		PosY => 130
+	)
+	port map(
+		clk_i => Global_Clock,
+
+		EOF => End_of_Frame_s,
+		Cur_x => X_Coord,
+		Cur_y => Y_Coord,			
+		
+		R_o => Ball_R_s,
+		G_o => Ball_G_s,
+		B_o => Ball_B_s
+	);
+	
+	
 	--------------------------- Logic ---------------------------
 
-	R_o <= Border_R_s or Player_R_s;
-	G_o <= Border_G_s or Player_G_s;
-	B_o <= Border_B_s or Player_B_s;
+	R_o <= Border_R_s or Player_R_s or Counter_R_s or Ball_R_s;
+	G_o <= Border_G_s or Player_G_s or Counter_G_s or Ball_G_s;
+	B_o <= Border_B_s or Player_B_s or Counter_B_s or Ball_B_s;
 	
 	dn_LED <= dn_btn;		
 	up_LED <= up_btn;

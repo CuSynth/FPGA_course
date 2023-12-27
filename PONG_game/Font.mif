@@ -1,0 +1,160 @@
+-- Copyright (C) 1991-2008 Altera Corporation
+-- Your use of Altera Corporation's design tools, logic functions 
+-- and other software and tools, and its AMPP partner logic 
+-- functions, and any output files from any of the foregoing 
+-- (including device programming or simulation files), and any 
+-- associated documentation or information are expressly subject 
+-- to the terms and conditions of the Altera Program License 
+-- Subscription Agreement, Altera MegaCore Function License 
+-- Agreement, or other applicable license agreement, including, 
+-- without limitation, that your use is for the sole purpose of 
+-- programming logic devices manufactured by Altera and sold by 
+-- Altera or its authorized distributors.  Please refer to the 
+-- applicable agreement for further details.
+
+-- Quartus II generated Memory Initialization File (.mif)
+
+WIDTH=16;
+DEPTH=256;
+
+ADDRESS_RADIX=HEX;
+DATA_RADIX=HEX;
+
+CONTENT BEGIN
+	[000..011]  :   0000;
+	012  :   000C;
+	013  :   F9ED;
+	014  :   FBED;
+	[015..017]  :   FBEF;
+	[018..01C]  :   FBED;
+	01D  :   00E0;
+	[01E..020]  :   0000;
+	021  :   0080;
+	022  :   F9ED;
+	023  :   FBED;
+	[024..028]  :   FBEF;
+	[029..02D]  :   FBED;
+	02E  :   0080;
+	[02F..030]  :   0000;
+	031  :   F9E1;
+	032  :   FBE1;
+	033  :   0200;
+	[034..036]  :   0000;
+	[037..038]  :   0412;
+	[039..03A]  :   0010;
+	03B  :   F811;
+	03C  :   0010;
+	[03D..03E]  :   FB8D;
+	[03F..040]  :   0000;
+	041  :   F961;
+	042  :   FB61;
+	043  :   0200;
+	[044..045]  :   0000;
+	046  :   0010;
+	[047..048]  :   0412;
+	049  :   0010;
+	04A  :   F811;
+	04B  :   0010;
+	04C  :   0090;
+	[04D..04E]  :   FB8D;
+	[04F..050]  :   0000;
+	051  :   F961;
+	052  :   FB61;
+	053  :   0200;
+	054  :   0000;
+	[055..056]  :   0010;
+	057  :   0012;
+	058  :   0002;
+	059  :   F801;
+	05A  :   0000;
+	[05B..05C]  :   0090;
+	05D  :   FB8D;
+	05E  :   FB0D;
+	[05F..060]  :   0000;
+	061  :   F961;
+	062  :   FB61;
+	063  :   0200;
+	[064..066]  :   0010;
+	[067..068]  :   0002;
+	069  :   F801;
+	06A  :   0080;
+	[06B..06C]  :   0090;
+	[06D..06E]  :   FB0D;
+	[06F..070]  :   0000;
+	071  :   FD41;
+	072  :   FD61;
+	073  :   0774;
+	[074..075]  :   077C;
+	076  :   076C;
+	077  :   076E;
+	078  :   FF6F;
+	[079..07A]  :   07EC;
+	07B  :   07FC;
+	07C  :   077C;
+	07D  :   FF0D;
+	07E  :   FF01;
+	[07F..080]  :   0000;
+	081  :   FD41;
+	082  :   FD55;
+	083  :   0574;
+	084  :   077C;
+	[085..086]  :   076C;
+	087  :   FF6F;
+	088  :   07EE;
+	[089..08A]  :   07EC;
+	[08B..08C]  :   077C;
+	08D  :   FF69;
+	08E  :   FF01;
+	[08F..090]  :   0000;
+	[091..092]  :   F955;
+	093  :   0010;
+	[094..095]  :   0000;
+	096  :   F801;
+	[097..098]  :   0082;
+	099  :   0080;
+	09A  :   0000;
+	[09B..09C]  :   0010;
+	[09D..09E]  :   FB69;
+	[09F..0A0]  :   0000;
+	[0A1..0A2]  :   F955;
+	[0A3..0A5]  :   0000;
+	0A6  :   F881;
+	[0A7..0A8]  :   0082;
+	[0A9..0AA]  :   0000;
+	[0AB..0AC]  :   0010;
+	[0AD..0AE]  :   FB69;
+	[0AF..0B0]  :   0000;
+	[0B1..0B2]  :   F955;
+	[0B3..0B4]  :   0010;
+	0B5  :   F891;
+	0B6  :   0090;
+	0B7  :   0492;
+	0B8  :   0412;
+	[0B9..0BC]  :   0010;
+	[0BD..0BE]  :   FB79;
+	[0BF..0C0]  :   0000;
+	[0C1..0C2]  :   F955;
+	0C3  :   0010;
+	0C4  :   F891;
+	[0C5..0C6]  :   0090;
+	[0C7..0C8]  :   0412;
+	[0C9..0CC]  :   0010;
+	[0CD..0CE]  :   FB79;
+	[0CF..0D1]  :   0000;
+	0D2  :   F96D;
+	0D3  :   FBED;
+	[0D4..0D5]  :   FBEF;
+	[0D6..0DA]  :   FB6F;
+	0DB  :   FB7F;
+	0DC  :   FB7D;
+	0DD  :   FB6D;
+	[0DE..0E1]  :   0000;
+	0E2  :   0028;
+	0E3  :   FBED;
+	0E4  :   FBEF;
+	[0E5..0EA]  :   FB6F;
+	0EB  :   FB7F;
+	0EC  :   FB7D;
+	0ED  :   0004;
+	[0EE..0FF]  :   0000;
+END;
