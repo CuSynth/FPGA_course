@@ -231,9 +231,9 @@ architecture rtl of PONG is
 		Ball_X_o	: out integer range 0 to 640;
 		Ball_Y_o	: out integer range 0 to 480;
 		
-		
-		Fall	: out std_logic;
-		Touch	: out std_logic
+		score		: out natural range 0 to 100;
+		dec_score	: out natural range 0 to 100
+
 	);
 	end component;
 
@@ -258,6 +258,10 @@ architecture rtl of PONG is
 	signal Counter_G_s      : std_logic_vector(3 downto 0);
 	signal Counter_B_s      : std_logic_vector(3 downto 0);
 
+	signal DecCounter_R_s      : std_logic_vector(3 downto 0);
+	signal DecCounter_G_s      : std_logic_vector(3 downto 0);
+	signal DecCounter_B_s      : std_logic_vector(3 downto 0);
+
 	signal Ball_R_s      	: std_logic_vector(3 downto 0);
 	signal Ball_G_s      	: std_logic_vector(3 downto 0);
 	signal Ball_B_s      	: std_logic_vector(3 downto 0);
@@ -271,8 +275,9 @@ architecture rtl of PONG is
 	signal Ball_X		: integer range 0 to 640;
 	signal Ball_Y		: integer range 0 to 480;
 	
-	signal Touch		: std_logic;
-	signal Fall			: std_logic;
+	
+	signal score		: natural range 0 to 100;
+	signal dec_score		: natural range 0 to 100;
 	
 begin
 	--------------------------- Mapping ---------------------------
@@ -362,7 +367,7 @@ begin
 	);
 
 	----- Counter -----
-	Writer_inst: Writer
+	counter_inst: Writer
 	generic map (
 		ColorDepth => VGA_Color_Depth,
 		R_color	=> counter_col_R,
@@ -379,7 +384,7 @@ begin
 		Cur_x => X_Coord,
 		Cur_y => Y_Coord,			
 		
-		to_show => 10,
+		to_show => score,
 
 
 		R_o => Counter_R_s,
@@ -387,6 +392,32 @@ begin
 		B_o => Counter_B_s
 	);
 	
+	----- DecCounter -----
+	dec_counter_inst: Writer
+	generic map (
+		ColorDepth => VGA_Color_Depth,
+		R_color	=> counter_col_R,
+		G_color	=> counter_col_G,
+		B_color	=> counter_col_B,
+
+		PosX => 300-18,
+		PosY => 30
+	)
+	port map(
+		clk_i => Global_Clock,
+
+		EOF => End_of_Frame_s,
+		Cur_x => X_Coord,
+		Cur_y => Y_Coord,			
+		
+		to_show => dec_score,
+
+
+		R_o => DecCounter_R_s,
+		G_o => DecCounter_G_s,
+		B_o => DecCounter_B_s
+	);
+
 	----- Ball -----
 	Ball_inst: Ball
 	generic map (
@@ -435,18 +466,21 @@ begin
 		Ball_X_o	=> Ball_X,
 		Ball_Y_o	=> Ball_Y,
 		
-		
-		Fall	=> Fall,
-		Touch	=> Touch
+		score		=> score,
+		dec_score	=> dec_score
 	);
 
 	
 	--------------------------- Logic ---------------------------
 
-	R_o <= Border_R_s or Player_R_s or Counter_R_s or Ball_R_s;
-	G_o <= Border_G_s or Player_G_s or Counter_G_s or Ball_G_s;
-	B_o <= Border_B_s or Player_B_s or Counter_B_s or Ball_B_s;
+
+
+
+
+	R_o <= Border_R_s or Player_R_s or Counter_R_s or Ball_R_s or DecCounter_R_s;
+	G_o <= Border_G_s or Player_G_s or Counter_G_s or Ball_G_s or DecCounter_G_s;
+	B_o <= Border_B_s or Player_B_s or Counter_B_s or Ball_B_s or DecCounter_B_s;
 	
-	dn_LED <= dn_btn;		
+	dn_LED <= dn_btn;	
 	up_LED <= up_btn;
 end rtl;

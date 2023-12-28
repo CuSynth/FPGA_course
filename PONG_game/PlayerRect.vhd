@@ -113,4 +113,7 @@ begin
 		B_o(i)		<=	Color_B_s(i) and Pixel_ON;
 	end generate;
 		
+	Carr_X <= LU_x;
+	Carr_Y <= LU_y;
+	Carr_V <= CurSpeed;
 end Behavioral;

@@ -30,9 +30,9 @@ entity PosControl is
 		Ball_X_o	: out integer range 0 to 640;
 		Ball_Y_o	: out integer range 0 to 480;
 		
-		
-		Fall	: out std_logic;
-		Touch	: out std_logic
+		score		: out natural range 0 to 100;
+		dec_score	: out natural range 0 to 100
+
 	);
 end PosControl;
 
@@ -45,6 +45,14 @@ architecture Behavioral of PosControl is
 	
 	signal Ball_X	: integer range 0 to 640 := 300;
 	signal Ball_Y	: integer range 0 to 480 := 200;
+	
+	signal score_s		: natural range 0 to 100;
+	signal dec_score_s	: natural range 0 to 100;
+
+	signal Fall			: std_logic;
+	signal Touch		: std_logic;
+	signal PrevTouch 	: std_logic;
+	
 begin
 
 		
@@ -60,8 +68,7 @@ begin
 				movement_reg <= 0;
 
 				Ball_X <= Ball_X +  V_x;
-				if((V_x > 0 and Ball_X+V_x+ball_w >= brd_R) or
-					(V_x < 0 and Ball_X+V_x <= brd_L))
+				if(V_x < 0 and Ball_X+V_x <= brd_L)
 				then 
 					V_x <= -1*V_x;
 				end if;
@@ -72,11 +79,64 @@ begin
 				then 
 					V_y <= -1*V_y;
 				end if;
+				
+				
+				if ((V_x > 0 and Ball_X+V_x+ball_w >= Carr_X))
+				then
+					if (Ball_Y+ball_H >= Carr_Y and Ball_Y <= Carr_Y+carriage_h )
+					then
+						Touch <= '1';
+
+						V_x <= -1*V_x;
+						V_y <= V_y + Carr_V/2;
+						
+						if (V_y>20)
+						then
+							V_y<=20;
+						elsif(V_y<-20)
+						then
+							V_y<=-20;
+						end if;
+					else
+						V_x <= 5;
+						V_y <= -1;
+						Ball_X <= 300;
+						Ball_Y <= 200;
+						
+						Fall <= '1';
+					end if;
+				else
+					Touch <= '0';
+					Fall <= '0';
+				end if;
 			end if;			
+
+			if(Touch = '1' and PrevTouch='0')
+			then
+				score_s <= score_s+1;
+				if(score_s>=9)
+				then
+					score_s<=0;
+					dec_score_s<=dec_score_s+1;
+					if(dec_score_s=9)
+					then
+						dec_score_s<=0;
+					end if;
+				end if;
+			end if;
+
+			PrevTouch <= Touch;
+			if(Fall ='1')
+			then 
+				dec_score_s <=0;
+				score_s <= 0;
+			end if;
 		end if;
+		
 	end process movement;		
 		
-	Ball_X_o <= Ball_X;
-	Ball_Y_o <= Ball_Y;
-		
+	Ball_X_o  <= Ball_X;
+	Ball_Y_o  <= Ball_Y;
+	score 	  <= score_s;
+	dec_score <= dec_score_s;
 end Behavioral;
