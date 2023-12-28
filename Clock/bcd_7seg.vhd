@@ -3,6 +3,7 @@ use ieee.std_logic_1164.all;
 	
 entity bcd_7seg is
 	port ( 
+		clk		:   in  std_logic;
 		bin_i	:	in  std_logic_vector(3 downto 0);
 		segm_o  :	out std_logic_vector(6 downto 0)
 	);
@@ -12,7 +13,7 @@ end bcd_7seg;
 architecture Behavioral of bcd_7seg is 
 begin
 
-	process(bin_i)
+	process(clk)
 	begin
 		case bin_i is
 		when "0000" => segm_o <= "1000000"; ---0
